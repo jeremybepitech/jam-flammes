@@ -18,6 +18,7 @@ class Flame {
         Flame(sf::Texture &flameTexture, int x, int y){
             flame.setTexture(flameTexture);
             flame.setPosition(x, y);
+            //flame.setScale(2.0f, 2.0f);
             this->x = x;
             this->y = y;
         };
@@ -27,4 +28,8 @@ class Flame {
         sf::Clock clock;
         int x;
         int y;
+
+        // void setScale(float scaleX, float scaleY) {
+        //     flame.setScale(scaleX, scaleY);
+        // }
 };

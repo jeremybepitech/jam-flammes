@@ -12,7 +12,7 @@ SRC = *.cpp
 all:	$(NAME)
 
 $(NAME):	$(SRC)
-	g++ $(CFLAGS) -o $(NAME) $(SRC) -lsfml-graphics -lsfml-window -lsfml-system
+	g++ $(CFLAGS) -o $(NAME) $(SRC) -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 clean:
 	rm -f $(NAME)

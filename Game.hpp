@@ -27,6 +27,7 @@ class Game {
         void init();
         void update();
         void render();
+        void checkFlameClick(const sf::Vector2i& mousePos);
 
         sf::RenderWindow window;
         sf::Sprite background;
@@ -34,4 +35,10 @@ class Game {
         sf::Texture flameTexture;
         std::vector<Flame> flames;
         std::vector<Position> flamePossiblePositions;
+        // Score && bruit game
+        int score = 0;
+        sf::SoundBuffer clickBuffer;
+        sf::Sound clickSound;
+        sf::Clock soundClock;
+        bool isSoundPlaying;
 };
