@@ -26,6 +26,14 @@ void Game::init()
     flameTexture.loadFromFile("flame.png");
     clickBuffer.loadFromFile("click.wav");
     clickSound.setBuffer(clickBuffer);
+        // Initialisation de la barre de progression
+    progressBarBackground.setSize(sf::Vector2f(726, 20));
+    progressBarBackground.setFillColor(sf::Color::White);
+    progressBarBackground.setPosition(0, 960);
+
+    progressBar.setSize(sf::Vector2f(0, 20)); // Commence avec une largeur de 0
+    progressBar.setFillColor(sf::Color::Green);
+    progressBar.setPosition(0, 960);
 
     flamePossiblePositions.push_back(Position(80, 250));
     flamePossiblePositions.push_back(Position(80, 550));
@@ -60,6 +68,7 @@ void Game::update()
             flames.push_back(Flame(flameTexture, flamePossiblePositions[j].x, flamePossiblePositions[j].y));
         }
     }
+    //float progress = score * progressSpeed / 50;
     while (this->window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             std::cout << "Score: " << score << std::endl;
@@ -75,6 +84,11 @@ void Game::update()
         clickSound.stop();
         isSoundPlaying = false;
     }
+
+    // Mettre à jour la barre de progression
+    float progress = score * progressSpeed;
+    if (progress > 726) progress = 726; // Limiter la largeur à 726 pixels (taille de la fenêtre)
+    progressBar.setSize(sf::Vector2f(progress, 20));
 }
 
 void Game::render()
@@ -84,6 +98,9 @@ void Game::render()
     for (long unsigned i = 0; i < flames.size(); i++) {
         this->window.draw(flames[i].flame);
     }
+    this->window.draw(progressBarBackground);
+    this->window.draw(progressBar);
+
     // sf::Text scoreText;
     // sf::Font font;
     // if (!font.loadFromFile("Roboto-Medium.ttf")) {
@@ -103,6 +120,16 @@ void Game::checkFlameClick(const sf::Vector2i& mousePos)
     for (long unsigned i = 0; i < flames.size(); i++) {
         if (flames[i].flame.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
             flames.erase(flames.begin() + i);
+
+            float currentWidth = progressBar.getSize().x;
+            currentWidth -= 50; // Diminuez de 50 pixels par clic (ajustez selon vos besoins)
+            if (currentWidth < 0) {
+                currentWidth = 0; // Empêcher la largeur de devenir négative
+            }
+            progressBar.setSize(sf::Vector2f(currentWidth, 20));
+            progressSpeed += 0.1f;
+
+
             score += 10;
             clickSound.play();
             isSoundPlaying = true;

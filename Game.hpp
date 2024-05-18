@@ -41,4 +41,7 @@ class Game {
         sf::Sound clickSound;
         sf::Clock soundClock;
         bool isSoundPlaying;
+        sf::RectangleShape progressBarBackground; // Fond de la barre de progression
+        sf::RectangleShape progressBar; // Barre de progression
+        float progressSpeed = 0.1; // Vitesse de remplissage de la barre
 };
