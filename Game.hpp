@@ -27,14 +27,18 @@ class Game {
         void init();
         void update();
         void render();
+        void displayLost();
         void checkFlameClick(const sf::Vector2i& mousePos);
 
         sf::RenderWindow window;
+        sf::Clock gameClock;
         sf::Sprite background;
         sf::Texture bgTexture;
         sf::Texture flameTexture;
+        sf::Texture laurentTexture;
         std::vector<Flame> flames;
         std::vector<Position> flamePossiblePositions;
+        sf::Texture medalTexture;
         // Score && bruit game
         int score = 0;
         sf::SoundBuffer clickBuffer;
@@ -44,4 +48,5 @@ class Game {
         sf::RectangleShape progressBarBackground; // Fond de la barre de progression
         sf::RectangleShape progressBar; // Barre de progression
         float progressSpeed = 0.1; // Vitesse de remplissage de la barre
+        bool isLost = false;
 };

@@ -24,6 +24,7 @@ void Game::init()
     bgTexture.loadFromFile("background.png");
     background.setTexture(bgTexture);
     flameTexture.loadFromFile("flame.png");
+    laurentTexture.loadFromFile("laurent.png");
     clickBuffer.loadFromFile("click.wav");
     clickSound.setBuffer(clickBuffer);
         // Initialisation de la barre de progression
@@ -46,14 +47,47 @@ void Game::init()
     flamePossiblePositions.push_back(Position(630, 800));
 
     int i = rand() % 9;
-    flames.push_back(Flame(flameTexture, flamePossiblePositions[i].x, flamePossiblePositions[i].y));
+    flames.push_back(Flame(flameTexture, laurentTexture, flamePossiblePositions[i].x, flamePossiblePositions[i].y));
+}
+
+void Game::displayLost()
+{
+    sf::Event event;
+    while (this->window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            std::cout << "Score: " << score << std::endl;
+            this->window.close();
+        }
+    }
+    sf::Font font;
+    if (!font.loadFromFile("SegaSonic.TTF")) {
+        // Gérer l'erreur de chargement de la police
+    }
+    sf::Text lostText;
+    lostText.setFont(font);
+    lostText.setString("Vous avez perdu !\n" + std::to_string(score) + " points");
+    lostText.setCharacterSize(20); // Taille du texte
+    lostText.setFillColor(sf::Color::Green); // Couleur du texte
+    lostText.setPosition(260, 400); // Position du texte dans la fenêtre
+    sf::Sprite medal;
+    medal.setTexture(medalTexture);
+    medal.setPosition(320, 500);
+    this->window.clear();
+    this->window.draw(background);
+    this->window.draw(lostText);
+    this->window.draw(medal);
+    this->window.display();
 }
 
 void Game::run()
 {
     while (this->window.isOpen()) {
-        this->update();
-        this->render();
+        if (isLost) {
+            displayLost();
+        } else {
+            this->update();
+            this->render();
+        }
     }
 }
 
@@ -65,7 +99,7 @@ void Game::update()
         if (flames[i].clock.getElapsedTime().asSeconds() > 1) {
             flames.erase(flames.begin() + i);
             int j = rand() % 9;
-            flames.push_back(Flame(flameTexture, flamePossiblePositions[j].x, flamePossiblePositions[j].y));
+            flames.push_back(Flame(flameTexture, laurentTexture, flamePossiblePositions[j].x, flamePossiblePositions[j].y));
         }
     }
     //float progress = score * progressSpeed / 50;
@@ -86,9 +120,26 @@ void Game::update()
     }
 
     // Mettre à jour la barre de progression
-    float progress = score * progressSpeed;
-    if (progress > 726) progress = 726; // Limiter la largeur à 726 pixels (taille de la fenêtre)
-    progressBar.setSize(sf::Vector2f(progress, 20));
+    if (gameClock.getElapsedTime().asSeconds() > 0.5) {
+        float currentWidth = progressBar.getSize().x;
+        currentWidth += 40 * progressSpeed;
+        if (currentWidth > 726) {
+            isLost = true;
+            if (score > 300) {
+                medalTexture.loadFromFile("gold.png");
+            } else if (score > 150) {
+                medalTexture.loadFromFile("silver.png");
+            } else {
+                medalTexture.loadFromFile("bronze.png");
+            }
+        }
+        if (currentWidth > 240)
+            progressBar.setFillColor(sf::Color::Yellow);
+        if (currentWidth > 480)
+            progressBar.setFillColor(sf::Color::Red);
+        progressBar.setSize(sf::Vector2f(currentWidth, 20));
+        gameClock.restart();
+    }
 }
 
 void Game::render()
@@ -100,17 +151,6 @@ void Game::render()
     }
     this->window.draw(progressBarBackground);
     this->window.draw(progressBar);
-
-    // sf::Text scoreText;
-    // sf::Font font;
-    // if (!font.loadFromFile("Roboto-Medium.ttf")) {
-    //     // Gérer l'erreur de chargement de la police
-    // }
-    // scoreText.setFont(font);
-    // scoreText.setString("Score: " + std::to_string(score));
-    // scoreText.setCharacterSize(24); // Taille du texte
-    // scoreText.setFillColor(sf::Color::White); // Couleur du texte
-    // scoreText.setPosition(10, 10); // Position du texte dans la fenêtre
     this->window.display();
 }
 
@@ -122,20 +162,25 @@ void Game::checkFlameClick(const sf::Vector2i& mousePos)
             flames.erase(flames.begin() + i);
 
             float currentWidth = progressBar.getSize().x;
-            currentWidth -= 50; // Diminuez de 50 pixels par clic (ajustez selon vos besoins)
+            if (flames[i].getIsLaurent()) {
+                currentWidth += 50 * progressSpeed;
+                score -= 20;
+            } else {
+                currentWidth -= 50 * progressSpeed;
+                score += 10;
+            }
             if (currentWidth < 0) {
-                currentWidth = 0; // Empêcher la largeur de devenir négative
+                currentWidth = 0;
             }
             progressBar.setSize(sf::Vector2f(currentWidth, 20));
             progressSpeed += 0.1f;
 
 
-            score += 10;
             clickSound.play();
             isSoundPlaying = true;
             soundClock.restart();
             int j = rand() % 9;
-            flames.push_back(Flame(flameTexture, flamePossiblePositions[j].x, flamePossiblePositions[j].y));
+            flames.push_back(Flame(flameTexture, laurentTexture, flamePossiblePositions[j].x, flamePossiblePositions[j].y));
         }
     }
 }
