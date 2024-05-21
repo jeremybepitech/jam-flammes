@@ -162,15 +162,15 @@ void Game::init()
 
     loadHighScores();
 
-    flamePossiblePositions.push_back(Position(80, 250));
-    flamePossiblePositions.push_back(Position(80, 550));
+    flamePossiblePositions.push_back(Position(80, 200));
+    flamePossiblePositions.push_back(Position(80, 480));
     flamePossiblePositions.push_back(Position(80, 800));
-    flamePossiblePositions.push_back(Position(340, 170));
-    flamePossiblePositions.push_back(Position(340, 550));
-    flamePossiblePositions.push_back(Position(340, 800));
-    flamePossiblePositions.push_back(Position(630, 250));
-    flamePossiblePositions.push_back(Position(630, 550));
-    flamePossiblePositions.push_back(Position(630, 800));
+    flamePossiblePositions.push_back(Position(310, 150));
+    flamePossiblePositions.push_back(Position(310, 450));
+    flamePossiblePositions.push_back(Position(310, 750));
+    flamePossiblePositions.push_back(Position(600, 150));
+    flamePossiblePositions.push_back(Position(600, 550));
+    flamePossiblePositions.push_back(Position(600, 750));
 
     int i = rand() % 9;
     flames.push_back(Flame(flameTexture, laurentTexture, flamePossiblePositions[i].x, flamePossiblePositions[i].y));
